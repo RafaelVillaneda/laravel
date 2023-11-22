@@ -1,9 +1,11 @@
-FROM jenkins/jenkins:centos7
+FROM php:8.2.0-zts-alpine3.16
 
-USER root
+WORKDIR /var/www/html
 
-RUN yum -y install epel-release
-RUN rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
-RUN yum-config-manager --enable remi-php74
-RUN yum install php php-mbstring php-xml php-pdo php-pdo_mysql php-xdebug -y
-RUN yum update -y
+RUN apk update 
+RUN curl -sS https://getcomposer.org/installer | php -- --version=2.4.3 --install-dir=/usr/local/bin --filename=composer
+
+COPY . .
+RUN composer install
+
+CMD ["php","artisan","serve","--host=0.0.0.0"]
